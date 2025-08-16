@@ -1,0 +1,120 @@
+# Implementation Plan for Remaining Tasks
+
+## 1. Settings Page Implementation
+- [ ] Create settings page directory structure
+  - [ ] Create settings directory under src/frontend/src/pages
+  - [ ] Create SettingsPage.tsx as main component
+  - [ ] Create subcomponents for different settings sections
+- [ ] Create settings service for API integration
+  - [ ] Create settingsService.ts in src/frontend/src/services
+  - [ ] Implement API methods for fetching and updating settings
+- [ ] Create settings Redux slice
+  - [ ] Create settingsSlice.ts in src/frontend/src/store/slices
+  - [ ] Define state interface and initial state
+  - [ ] Implement actions for settings management
+- [ ] Implement user profile settings component
+  - [ ] Create form for updating name, email
+  - [ ] Add profile picture upload functionality
+  - [ ] Connect to user API endpoints
+- [ ] Implement notification preferences component
+  - [ ] Create toggles for different notification types
+  - [ ] Implement email notification settings
+  - [ ] Connect to notification API endpoints
+- [ ] Implement chart preferences component
+  - [ ] Add default timeframe selection
+  - [ ] Add default indicators selection
+  - [ ] Create chart theme options
+- [ ] Implement theme settings component
+  - [ ] Add light/dark mode toggle
+  - [ ] Add color customization options
+  - [ ] Implement theme preview
+- [ ] Implement password change component
+  - [ ] Create password change form
+  - [ ] Add validation for password strength
+  - [ ] Connect to password change API endpoint
+- [ ] Connect components to Redux and API
+  - [ ] Wire up all components to Redux store
+  - [ ] Implement loading and error states
+  - [ ] Add success notifications
+
+## 2. Real-time Data Updates
+- [ ] Research WebSocket implementation options
+  - [ ] Evaluate Socket.IO vs native WebSockets
+  - [ ] Determine message format and protocol
+- [ ] Set up WebSocket connection in frontend
+  - [ ] Create WebSocket service
+  - [ ] Implement connection management
+  - [ ] Add authentication to WebSocket connection
+- [ ] Create WebSocket service
+  - [ ] Implement connection handling
+  - [ ] Add message parsing and routing
+  - [ ] Create subscription management
+- [ ] Implement real-time data handlers in Redux slices
+  - [ ] Update market data slice for real-time updates
+  - [ ] Update portfolio slice for real-time updates
+  - [ ] Update watchlist slice for real-time updates
+- [ ] Add real-time updates to relevant components
+  - [ ] Update stock price components
+  - [ ] Update portfolio value components
+  - [ ] Update chart components
+- [ ] Implement reconnection logic
+  - [ ] Add automatic reconnection on disconnect
+  - [ ] Implement exponential backoff
+  - [ ] Add connection status indicators
+
+## 3. TradingView Chart Integration
+- [ ] Research TradingView Charting Library integration
+  - [ ] Review documentation and requirements
+  - [ ] Determine licensing requirements
+  - [ ] Identify integration approach
+- [ ] Set up TradingView library in the project
+  - [ ] Add library dependencies
+  - [ ] Configure webpack for library support
+  - [ ] Create wrapper component
+- [ ] Create TradingViewChart component
+  - [ ] Implement chart initialization
+  - [ ] Create data feed adapter
+  - [ ] Add symbol search functionality
+- [ ] Implement chart configuration options
+  - [ ] Add timeframe selection
+  - [ ] Implement chart type selection
+  - [ ] Add drawing tools support
+- [ ] Connect chart to market data
+  - [ ] Implement historical data loading
+  - [ ] Connect to real-time data stream
+  - [ ] Add data transformation utilities
+- [ ] Add technical indicators support
+  - [ ] Implement common indicators (MA, RSI, MACD)
+  - [ ] Create indicator settings UI
+  - [ ] Add indicator templates
+- [ ] Replace existing chart components with TradingView charts
+  - [ ] Update StockDetailPage
+  - [ ] Update Dashboard charts
+  - [ ] Update Portfolio performance charts
+
+## 4. Backtest Page Completion
+- [x] Review existing BacktestPage.tsx structure
+- [ ] Create backtestService for API integration
+  - [ ] Implement strategy saving/loading
+  - [ ] Add backtest execution endpoints
+  - [ ] Create results retrieval methods
+- [ ] Create backtestSlice for Redux integration
+  - [ ] Define state interface and initial state
+  - [ ] Implement actions for backtest operations
+  - [ ] Add selectors for backtest data
+- [ ] Connect BacktestPage to Redux store
+  - [ ] Replace mock data with Redux state
+  - [ ] Implement loading and error states
+  - [ ] Add success notifications
+- [ ] Implement strategy saving functionality
+  - [ ] Create strategy form validation
+  - [ ] Add strategy metadata management
+  - [ ] Implement strategy versioning
+- [ ] Implement strategy loading functionality
+  - [ ] Create strategy selection UI
+  - [ ] Add strategy filtering and search
+  - [ ] Implement strategy preview
+- [ ] Connect to backend API endpoints
+  - [ ] Integrate with strategy API
+  - [ ] Connect to backtest execution API
+  - [ ] Implement results visualization with real data

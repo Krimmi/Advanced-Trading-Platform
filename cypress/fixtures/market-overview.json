@@ -1,0 +1,218 @@
+{
+  "marketIndices": [
+    {
+      "name": "S&P 500",
+      "symbol": "SPX",
+      "value": 4525.75,
+      "change": 35.25,
+      "changePercent": 0.78,
+      "high": 4530.50,
+      "low": 4505.25,
+      "open": 4510.50,
+      "previousClose": 4490.50,
+      "timestamp": "2023-08-14T18:30:00Z"
+    },
+    {
+      "name": "NASDAQ Composite",
+      "symbol": "IXIC",
+      "value": 14250.30,
+      "change": 125.75,
+      "changePercent": 0.89,
+      "high": 14275.50,
+      "low": 14200.25,
+      "open": 14210.50,
+      "previousClose": 14124.55,
+      "timestamp": "2023-08-14T18:30:00Z"
+    },
+    {
+      "name": "Dow Jones Industrial Average",
+      "symbol": "DJI",
+      "value": 35750.80,
+      "change": 225.50,
+      "changePercent": 0.63,
+      "high": 35800.25,
+      "low": 35650.75,
+      "open": 35675.25,
+      "previousClose": 35525.30,
+      "timestamp": "2023-08-14T18:30:00Z"
+    },
+    {
+      "name": "Russell 2000",
+      "symbol": "RUT",
+      "value": 1950.25,
+      "change": 15.75,
+      "changePercent": 0.81,
+      "high": 1955.50,
+      "low": 1945.25,
+      "open": 1947.50,
+      "previousClose": 1934.50,
+      "timestamp": "2023-08-14T18:30:00Z"
+    },
+    {
+      "name": "VIX",
+      "symbol": "VIX",
+      "value": 15.75,
+      "change": -0.85,
+      "changePercent": -5.12,
+      "high": 16.50,
+      "low": 15.25,
+      "open": 16.25,
+      "previousClose": 16.60,
+      "timestamp": "2023-08-14T18:30:00Z"
+    }
+  ],
+  "sectorPerformance": [
+    {
+      "name": "Technology",
+      "changePercent": 1.25,
+      "marketCap": 12500000000000,
+      "volume": 5250000000
+    },
+    {
+      "name": "Healthcare",
+      "changePercent": 0.75,
+      "marketCap": 7500000000000,
+      "volume": 2750000000
+    },
+    {
+      "name": "Financial Services",
+      "changePercent": 0.95,
+      "marketCap": 8750000000000,
+      "volume": 3250000000
+    },
+    {
+      "name": "Consumer Cyclical",
+      "changePercent": 0.85,
+      "marketCap": 6500000000000,
+      "volume": 2500000000
+    },
+    {
+      "name": "Communication Services",
+      "changePercent": 1.05,
+      "marketCap": 5500000000000,
+      "volume": 2250000000
+    },
+    {
+      "name": "Industrials",
+      "changePercent": 0.65,
+      "marketCap": 4750000000000,
+      "volume": 1750000000
+    },
+    {
+      "name": "Consumer Defensive",
+      "changePercent": 0.35,
+      "marketCap": 4250000000000,
+      "volume": 1500000000
+    },
+    {
+      "name": "Energy",
+      "changePercent": -0.45,
+      "marketCap": 3750000000000,
+      "volume": 1250000000
+    },
+    {
+      "name": "Utilities",
+      "changePercent": 0.15,
+      "marketCap": 2750000000000,
+      "volume": 950000000
+    },
+    {
+      "name": "Real Estate",
+      "changePercent": 0.55,
+      "marketCap": 2500000000000,
+      "volume": 850000000
+    },
+    {
+      "name": "Basic Materials",
+      "changePercent": -0.25,
+      "marketCap": 2250000000000,
+      "volume": 750000000
+    }
+  ],
+  "marketNews": [
+    {
+      "title": "Fed Minutes Show Officials Divided on Future Rate Hikes",
+      "source": "Wall Street Journal",
+      "url": "https://www.wsj.com/articles/fed-minutes-show-officials-divided-on-future-rate-hikes-11629308400",
+      "publishedAt": "2023-08-14T14:30:00Z",
+      "summary": "Federal Reserve officials were divided at their last meeting over when they might begin to reduce their asset purchases, with some arguing for patience and others suggesting they would be open to scaling back bond buying in coming months."
+    },
+    {
+      "title": "Tech Stocks Lead Market Higher as Inflation Concerns Ease",
+      "source": "Bloomberg",
+      "url": "https://www.bloomberg.com/news/articles/2023-08-14/tech-stocks-lead-market-higher-as-inflation-concerns-ease",
+      "publishedAt": "2023-08-14T15:45:00Z",
+      "summary": "Technology stocks led the market higher on Monday as concerns about inflation eased following recent economic data. The Nasdaq Composite rose nearly 1%, outpacing gains in the broader market."
+    },
+    {
+      "title": "Retail Sales Data Shows Consumer Spending Remains Strong",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2023/08/14/retail-sales-data-shows-consumer-spending-remains-strong.html",
+      "publishedAt": "2023-08-14T13:15:00Z",
+      "summary": "U.S. retail sales rose more than expected in July, suggesting that consumer spending remains strong despite concerns about inflation and rising interest rates. The Commerce Department reported that retail sales increased 0.7% last month."
+    },
+    {
+      "title": "Oil Prices Fall on Concerns About Global Demand",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/business/energy/oil-prices-fall-concerns-about-global-demand-2023-08-14/",
+      "publishedAt": "2023-08-14T16:20:00Z",
+      "summary": "Oil prices fell on Monday as concerns about global demand outweighed production cuts by OPEC+ producers. Brent crude futures were down 0.5% at $84.50 a barrel, while U.S. West Texas Intermediate crude was down 0.6% at $81.25."
+    },
+    {
+      "title": "Major Chipmaker Announces $25 Billion Investment in New U.S. Factory",
+      "source": "Financial Times",
+      "url": "https://www.ft.com/content/major-chipmaker-announces-25-billion-investment-in-new-us-factory",
+      "publishedAt": "2023-08-14T12:00:00Z",
+      "summary": "A leading semiconductor manufacturer has announced plans to invest $25 billion in a new chip factory in the United States, highlighting the ongoing push to boost domestic production of critical technology components."
+    }
+  ],
+  "economicIndicators": [
+    {
+      "name": "10-Year Treasury Yield",
+      "value": 3.85,
+      "change": 0.05,
+      "changePercent": 1.32
+    },
+    {
+      "name": "2-Year Treasury Yield",
+      "value": 4.25,
+      "change": 0.03,
+      "changePercent": 0.71
+    },
+    {
+      "name": "US Dollar Index",
+      "value": 102.75,
+      "change": -0.35,
+      "changePercent": -0.34
+    },
+    {
+      "name": "Gold",
+      "value": 1925.50,
+      "change": 12.75,
+      "changePercent": 0.67
+    },
+    {
+      "name": "WTI Crude Oil",
+      "value": 81.25,
+      "change": -0.50,
+      "changePercent": -0.61
+    },
+    {
+      "name": "Bitcoin",
+      "value": 29750.25,
+      "change": 750.50,
+      "changePercent": 2.59
+    }
+  ],
+  "marketBreadth": {
+    "advancers": 2350,
+    "decliners": 950,
+    "unchanged": 125,
+    "newHighs": 125,
+    "newLows": 45,
+    "advanceVolume": 2750000000,
+    "declineVolume": 1250000000,
+    "totalVolume": 4125000000,
+    "advanceDeclineRatio": 2.47
+  }
+}

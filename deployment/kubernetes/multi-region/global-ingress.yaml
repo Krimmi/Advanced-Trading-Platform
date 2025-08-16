@@ -1,0 +1,112 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hedge-fund-trading-platform-global
+  namespace: production
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: "trading.hedgefund-trading.com"
+    external-dns.alpha.kubernetes.io/ttl: "60"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($http_x_forwarded_proto = "http") {
+        return 301 https://$host$request_uri;
+      }
+spec:
+  tls:
+  - hosts:
+    - trading.hedgefund-trading.com
+    secretName: hftp-global-tls-cert
+  rules:
+  - host: trading.hedgefund-trading.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: global-router
+            port:
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: global-router
+  namespace: production
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: global-router
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: global-router
+  namespace: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: global-router
+  template:
+    metadata:
+      labels:
+        app: global-router
+    spec:
+      containers:
+      - name: global-router
+        image: ${DOCKER_REGISTRY}/global-router:${IMAGE_TAG}
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8443
+          name: https
+        env:
+        - name: REGION_US_ENDPOINT
+          value: "https://api-us.hedgefund-trading.com"
+        - name: REGION_EU_ENDPOINT
+          value: "https://api-eu.hedgefund-trading.com"
+        - name: REGION_AP_ENDPOINT
+          value: "https://api-ap.hedgefund-trading.com"
+        - name: DEFAULT_REGION
+          value: "us-east-1"
+        - name: HEALTH_CHECK_INTERVAL
+          value: "10"
+        - name: ROUTING_MODE
+          value: "latency"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi

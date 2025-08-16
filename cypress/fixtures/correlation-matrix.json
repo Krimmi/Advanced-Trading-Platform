@@ -1,0 +1,191 @@
+{
+  "correlationMatrix": {
+    "symbols": ["AAPL", "MSFT", "AMZN", "JPM", "JNJ"],
+    "names": ["Apple Inc.", "Microsoft Corporation", "Amazon.com Inc.", "JPMorgan Chase & Co.", "Johnson & Johnson"],
+    "matrix": [
+      [1.00, 0.72, 0.65, 0.45, 0.32],
+      [0.72, 1.00, 0.68, 0.48, 0.35],
+      [0.65, 0.68, 1.00, 0.42, 0.28],
+      [0.45, 0.48, 0.42, 1.00, 0.38],
+      [0.32, 0.35, 0.28, 0.38, 1.00]
+    ]
+  },
+  "correlationStatistics": {
+    "averageCorrelation": 0.48,
+    "medianCorrelation": 0.45,
+    "highestCorrelation": {
+      "pair": ["AAPL", "MSFT"],
+      "value": 0.72
+    },
+    "lowestCorrelation": {
+      "pair": ["AMZN", "JNJ"],
+      "value": 0.28
+    },
+    "diversificationScore": 65.5
+  },
+  "sectorCorrelations": [
+    {
+      "sector1": "Technology",
+      "sector2": "Technology",
+      "correlation": 1.00
+    },
+    {
+      "sector1": "Technology",
+      "sector2": "Financial Services",
+      "correlation": 0.55
+    },
+    {
+      "sector1": "Technology",
+      "sector2": "Healthcare",
+      "correlation": 0.35
+    },
+    {
+      "sector1": "Technology",
+      "sector2": "Consumer Cyclical",
+      "correlation": 0.65
+    },
+    {
+      "sector1": "Financial Services",
+      "sector2": "Financial Services",
+      "correlation": 1.00
+    },
+    {
+      "sector1": "Financial Services",
+      "sector2": "Healthcare",
+      "correlation": 0.42
+    },
+    {
+      "sector1": "Financial Services",
+      "sector2": "Consumer Cyclical",
+      "correlation": 0.58
+    },
+    {
+      "sector1": "Healthcare",
+      "sector2": "Healthcare",
+      "correlation": 1.00
+    },
+    {
+      "sector1": "Healthcare",
+      "sector2": "Consumer Cyclical",
+      "correlation": 0.38
+    },
+    {
+      "sector1": "Consumer Cyclical",
+      "sector2": "Consumer Cyclical",
+      "correlation": 1.00
+    }
+  ],
+  "timeSeriesCorrelations": {
+    "periods": ["1 Month", "3 Months", "6 Months", "1 Year", "3 Years", "5 Years"],
+    "values": [
+      {
+        "pair": ["AAPL", "MSFT"],
+        "correlations": [0.78, 0.75, 0.72, 0.70, 0.68, 0.65]
+      },
+      {
+        "pair": ["AAPL", "AMZN"],
+        "correlations": [0.70, 0.68, 0.65, 0.62, 0.60, 0.58]
+      },
+      {
+        "pair": ["AAPL", "JPM"],
+        "correlations": [0.50, 0.48, 0.45, 0.42, 0.40, 0.38]
+      },
+      {
+        "pair": ["AAPL", "JNJ"],
+        "correlations": [0.38, 0.35, 0.32, 0.30, 0.28, 0.25]
+      },
+      {
+        "pair": ["MSFT", "AMZN"],
+        "correlations": [0.72, 0.70, 0.68, 0.65, 0.62, 0.60]
+      },
+      {
+        "pair": ["MSFT", "JPM"],
+        "correlations": [0.52, 0.50, 0.48, 0.45, 0.42, 0.40]
+      },
+      {
+        "pair": ["MSFT", "JNJ"],
+        "correlations": [0.40, 0.38, 0.35, 0.32, 0.30, 0.28]
+      },
+      {
+        "pair": ["AMZN", "JPM"],
+        "correlations": [0.48, 0.45, 0.42, 0.40, 0.38, 0.35]
+      },
+      {
+        "pair": ["AMZN", "JNJ"],
+        "correlations": [0.35, 0.32, 0.28, 0.25, 0.22, 0.20]
+      },
+      {
+        "pair": ["JPM", "JNJ"],
+        "correlations": [0.42, 0.40, 0.38, 0.35, 0.32, 0.30]
+      }
+    ]
+  },
+  "marketRegimeCorrelations": [
+    {
+      "regime": "Bull Market",
+      "averageCorrelation": 0.42,
+      "matrix": [
+        [1.00, 0.68, 0.60, 0.40, 0.28],
+        [0.68, 1.00, 0.62, 0.42, 0.30],
+        [0.60, 0.62, 1.00, 0.38, 0.25],
+        [0.40, 0.42, 0.38, 1.00, 0.32],
+        [0.28, 0.30, 0.25, 0.32, 1.00]
+      ]
+    },
+    {
+      "regime": "Bear Market",
+      "averageCorrelation": 0.65,
+      "matrix": [
+        [1.00, 0.85, 0.78, 0.68, 0.55],
+        [0.85, 1.00, 0.80, 0.70, 0.58],
+        [0.78, 0.80, 1.00, 0.65, 0.52],
+        [0.68, 0.70, 0.65, 1.00, 0.60],
+        [0.55, 0.58, 0.52, 0.60, 1.00]
+      ]
+    },
+    {
+      "regime": "High Volatility",
+      "averageCorrelation": 0.72,
+      "matrix": [
+        [1.00, 0.88, 0.82, 0.75, 0.62],
+        [0.88, 1.00, 0.85, 0.78, 0.65],
+        [0.82, 0.85, 1.00, 0.72, 0.60],
+        [0.75, 0.78, 0.72, 1.00, 0.68],
+        [0.62, 0.65, 0.60, 0.68, 1.00]
+      ]
+    },
+    {
+      "regime": "Low Volatility",
+      "averageCorrelation": 0.35,
+      "matrix": [
+        [1.00, 0.58, 0.52, 0.32, 0.22],
+        [0.58, 1.00, 0.55, 0.35, 0.25],
+        [0.52, 0.55, 1.00, 0.30, 0.20],
+        [0.32, 0.35, 0.30, 1.00, 0.28],
+        [0.22, 0.25, 0.20, 0.28, 1.00]
+      ]
+    }
+  ],
+  "portfolioOptimizationSuggestions": [
+    {
+      "suggestion": "Add Uncorrelated Assets",
+      "description": "Consider adding gold (GLD) or treasury bonds (TLT) to reduce overall portfolio correlation",
+      "expectedImpact": "Could reduce average correlation by 0.12"
+    },
+    {
+      "suggestion": "Reduce Technology Exposure",
+      "description": "Technology stocks show high correlation with each other. Consider reducing allocation to this sector",
+      "expectedImpact": "Could reduce average correlation by 0.08"
+    },
+    {
+      "suggestion": "Increase Healthcare Allocation",
+      "description": "Healthcare stocks show lower correlation with other sectors in the portfolio",
+      "expectedImpact": "Could reduce average correlation by 0.05"
+    },
+    {
+      "suggestion": "Add International Exposure",
+      "description": "Consider adding international stocks which typically have lower correlation with US equities",
+      "expectedImpact": "Could reduce average correlation by 0.10"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "portfolioValue": 1250000.75,
+  "cashBalance": 125000.50,
+  "dayChange": 12500.25,
+  "dayChangePercent": 1.01,
+  "totalReturn": 250000.00,
+  "totalReturnPercent": 25.00,
+  "metrics": {
+    "sharpeRatio": 1.75,
+    "beta": 0.85,
+    "alpha": 5.2,
+    "maxDrawdown": -15.3,
+    "volatility": 18.5,
+    "sortinoRatio": 2.1,
+    "informationRatio": 0.95
+  },
+  "allocation": {
+    "sectors": [
+      { "name": "Technology", "value": 450000.00, "percentage": 36.0 },
+      { "name": "Financial Services", "value": 300000.00, "percentage": 24.0 },
+      { "name": "Healthcare", "value": 200000.00, "percentage": 16.0 },
+      { "name": "Consumer Cyclical", "value": 150000.00, "percentage": 12.0 },
+      { "name": "Energy", "value": 75000.00, "percentage": 6.0 },
+      { "name": "Cash", "value": 75000.75, "percentage": 6.0 }
+    ],
+    "assetClasses": [
+      { "name": "Equities", "value": 1000000.00, "percentage": 80.0 },
+      { "name": "Fixed Income", "value": 125000.00, "percentage": 10.0 },
+      { "name": "Alternatives", "value": 50000.00, "percentage": 4.0 },
+      { "name": "Cash", "value": 75000.75, "percentage": 6.0 }
+    ]
+  },
+  "holdings": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "quantity": 1000,
+      "averagePrice": 150.00,
+      "currentPrice": 175.50,
+      "marketValue": 175500.00,
+      "unrealizedPnL": 25500.00,
+      "unrealizedPnLPercent": 17.00,
+      "weight": 14.04
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "quantity": 800,
+      "averagePrice": 220.00,
+      "currentPrice": 265.75,
+      "marketValue": 212600.00,
+      "unrealizedPnL": 36600.00,
+      "unrealizedPnLPercent": 16.64,
+      "weight": 17.01
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc.",
+      "quantity": 500,
+      "averagePrice": 140.00,
+      "currentPrice": 135.50,
+      "marketValue": 67750.00,
+      "unrealizedPnL": -2250.00,
+      "unrealizedPnLPercent": -1.61,
+      "weight": 5.42
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "quantity": 1200,
+      "averagePrice": 130.00,
+      "currentPrice": 145.25,
+      "marketValue": 174300.00,
+      "unrealizedPnL": 18300.00,
+      "unrealizedPnLPercent": 14.08,
+      "weight": 13.94
+    },
+    {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "quantity": 900,
+      "averagePrice": 160.00,
+      "currentPrice": 170.80,
+      "marketValue": 153720.00,
+      "unrealizedPnL": 9720.00,
+      "unrealizedPnLPercent": 6.75,
+      "weight": 12.30
+    }
+  ]
+}

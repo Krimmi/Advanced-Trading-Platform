@@ -1,0 +1,497 @@
+name: Multi-Region CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      deploy_regions:
+        description: 'Regions to deploy to (comma-separated)'
+        required: true
+        default: 'us-east-1,eu-west-1,ap-southeast-1'
+      deploy_environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+
+env:
+  PRIMARY_REGION: us-east-1
+  APP_NAME: hedge-fund-trading-platform
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npm run lint
+  
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run unit tests
+        run: npm test -- --coverage
+      
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+  
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build app
+        run: npm run build
+      
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v5
+        with:
+          start: npm run start
+          wait-on: 'http://localhost:3000'
+          browser: chrome
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      
+      - name: Upload Cypress screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+  
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run SAST scan
+        uses: github/codeql-action/analyze@v2
+        with:
+          languages: javascript, typescript
+      
+      - name: Run dependency scan
+        run: npm audit --audit-level=high
+      
+      - name: Build Docker image for scanning
+        run: |
+          docker build -t ${{ env.APP_NAME }}:${{ github.sha }} .
+      
+      - name: Run container scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.APP_NAME }}:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+      
+      - name: Upload scan results
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trivy-results.sarif
+  
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [test, e2e-test, security-scan]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    outputs:
+      image_tag: ${{ steps.version.outputs.VERSION }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate version number
+        id: version
+        run: |
+          echo "VERSION=$(date +'%Y.%m.%d')-${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
+      
+      - name: Update version in package.json
+        run: |
+          npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
+      
+      - name: Build frontend
+        run: npm run build
+        env:
+          REACT_APP_VERSION: ${{ steps.version.outputs.VERSION }}
+          REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          REACT_APP_ENVIRONMENT: ${{ github.event.inputs.deploy_environment || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.PRIMARY_REGION }}
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      
+      - name: Build and push frontend Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.frontend
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}-frontend:${{ steps.version.outputs.VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}-frontend:latest
+      
+      - name: Build and push backend Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./src/backend
+          file: ./src/backend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}-backend:${{ steps.version.outputs.VERSION }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.APP_NAME }}-backend:latest
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build
+  
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        region: ${{ github.event.inputs.deploy_regions ? fromJSON('["' + join('","', split(github.event.inputs.deploy_regions, ',')) + '"]') : ['us-east-1', 'eu-west-1', 'ap-southeast-1'] }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ matrix.region }}
+      
+      - name: Terraform Init
+        run: |
+          cd deployment/terraform
+          terraform init \
+            -backend-config="bucket=${{ env.APP_NAME }}-terraform-state-${{ matrix.region }}" \
+            -backend-config="key=${{ github.event.inputs.deploy_environment || (github.ref == 'refs/heads/main' && 'production' || 'development') }}/terraform.tfstate" \
+            -backend-config="region=${{ matrix.region }}"
+      
+      - name: Terraform Plan
+        id: plan
+        run: |
+          cd deployment/terraform
+          terraform plan \
+            -var="region=${{ matrix.region }}" \
+            -var="environment=${{ github.event.inputs.deploy_environment || (github.ref == 'refs/heads/main' && 'production' || 'development') }}" \
+            -var="app_name=${{ env.APP_NAME }}" \
+            -var="image_tag=${{ needs.build.outputs.image_tag }}" \
+            -var="is_primary_region=${{ matrix.region == env.PRIMARY_REGION }}" \
+            -out=tfplan
+      
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan-${{ matrix.region }}
+          path: deployment/terraform/tfplan
+  
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        region: ${{ github.event.inputs.deploy_regions ? fromJSON('["' + join('","', split(github.event.inputs.deploy_regions, ',')) + '"]') : ['us-east-1', 'eu-west-1', 'ap-southeast-1'] }}
+    environment:
+      name: ${{ github.event.inputs.deploy_environment || 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ matrix.region }}
+      
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-plan-${{ matrix.region }}
+          path: deployment/terraform
+      
+      - name: Terraform Init
+        run: |
+          cd deployment/terraform
+          terraform init \
+            -backend-config="bucket=${{ env.APP_NAME }}-terraform-state-${{ matrix.region }}" \
+            -backend-config="key=${{ github.event.inputs.deploy_environment || 'production' }}/terraform.tfstate" \
+            -backend-config="region=${{ matrix.region }}"
+      
+      - name: Terraform Apply
+        run: |
+          cd deployment/terraform
+          terraform apply -auto-approve tfplan
+  
+  deploy-kubernetes:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: [build, terraform-apply]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        region: ${{ github.event.inputs.deploy_regions ? fromJSON('["' + join('","', split(github.event.inputs.deploy_regions, ',')) + '"]') : ['us-east-1', 'eu-west-1', 'ap-southeast-1'] }}
+    environment:
+      name: ${{ github.event.inputs.deploy_environment || 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ matrix.region }}
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name ${{ env.APP_NAME }}-${{ github.event.inputs.deploy_environment || 'production' }}-${{ matrix.region }}-eks --region ${{ matrix.region }}
+      
+      - name: Deploy to Kubernetes
+        run: |
+          # Set environment variables
+          export DOCKER_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+          export IMAGE_TAG="${{ needs.build.outputs.image_tag }}"
+          export ENVIRONMENT="${{ github.event.inputs.deploy_environment || 'production' }}"
+          export REGION="${{ matrix.region }}"
+          export REGION_CODE="${{ matrix.region == 'us-east-1' ? 'us' : matrix.region == 'eu-west-1' ? 'eu' : 'ap' }}"
+          
+          # Apply region-specific configuration
+          kubectl apply -f deployment/kubernetes/multi-region/${{ matrix.region }}/region-config.yaml
+          
+          # Apply base deployment with environment variables
+          envsubst < deployment/kubernetes/multi-region/base-deployment.yaml | kubectl apply -f -
+          
+          # If this is the primary region, also deploy global ingress
+          if [ "${{ matrix.region }}" = "${{ env.PRIMARY_REGION }}" ]; then
+            envsubst < deployment/kubernetes/multi-region/global-ingress.yaml | kubectl apply -f -
+          fi
+      
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/hedge-fund-trading-platform -n production --timeout=300s
+  
+  setup-database-replication:
+    name: Setup Database Replication
+    runs-on: ubuntu-latest
+    needs: deploy-kubernetes
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment:
+      name: ${{ github.event.inputs.deploy_environment || 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.PRIMARY_REGION }}
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.6
+      
+      - name: Terraform Init
+        run: |
+          cd deployment/terraform/modules/database_replication
+          terraform init \
+            -backend-config="bucket=${{ env.APP_NAME }}-terraform-state-${{ env.PRIMARY_REGION }}" \
+            -backend-config="key=${{ github.event.inputs.deploy_environment || 'production' }}/database-replication.tfstate" \
+            -backend-config="region=${{ env.PRIMARY_REGION }}"
+      
+      - name: Terraform Apply
+        run: |
+          cd deployment/terraform/modules/database_replication
+          terraform apply -auto-approve \
+            -var="app_name=${{ env.APP_NAME }}" \
+            -var="environment=${{ github.event.inputs.deploy_environment || 'production' }}" \
+            -var="primary_region=${{ env.PRIMARY_REGION }}" \
+            -var="replica_regions=${{ github.event.inputs.deploy_regions ? github.event.inputs.deploy_regions : 'eu-west-1,ap-southeast-1' }}"
+  
+  post-deployment-tests:
+    name: Post-Deployment Tests
+    runs-on: ubuntu-latest
+    needs: [deploy-kubernetes, setup-database-replication]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        region: ${{ github.event.inputs.deploy_regions ? fromJSON('["' + join('","', split(github.event.inputs.deploy_regions, ',')) + '"]') : ['us-east-1', 'eu-west-1', 'ap-southeast-1'] }}
+    environment:
+      name: ${{ github.event.inputs.deploy_environment || 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run regional health checks
+        run: |
+          # Set API endpoint based on region
+          REGION_CODE="${{ matrix.region == 'us-east-1' ? 'us' : matrix.region == 'eu-west-1' ? 'eu' : 'ap' }}"
+          API_ENDPOINT="https://api-${REGION_CODE}.${{ secrets.DOMAIN_NAME }}"
+          
+          # Run health check
+          echo "Testing API endpoint: ${API_ENDPOINT}"
+          curl -sSf "${API_ENDPOINT}/api/health" || exit 1
+          
+          # Run more comprehensive tests
+          npm run test:integration -- --url=${API_ENDPOINT}
+      
+      - name: Test cross-region data access
+        run: |
+          # Set API endpoint based on region
+          REGION_CODE="${{ matrix.region == 'us-east-1' ? 'us' : matrix.region == 'eu-west-1' ? 'eu' : 'ap' }}"
+          API_ENDPOINT="https://api-${REGION_CODE}.${{ secrets.DOMAIN_NAME }}"
+          
+          # Run cross-region data access tests
+          npm run test:cross-region -- --url=${API_ENDPOINT} --primary-region=${{ env.PRIMARY_REGION }}
+  
+  notify-deployment:
+    name: Notify Deployment
+    runs-on: ubuntu-latest
+    needs: post-deployment-tests
+    if: always()
+    steps:
+      - name: Determine deployment status
+        id: status
+        run: |
+          if [ "${{ needs.post-deployment-tests.result }}" = "success" ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "emoji=:rocket:" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "emoji=:x:" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ steps.status.outputs.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+          text: |
+            ${{ steps.status.outputs.emoji }} Multi-Region Deployment to ${{ github.event.inputs.deploy_regions || 'us-east-1,eu-west-1,ap-southeast-1' }} - ${{ steps.status.outputs.status == 'success' && 'Successful' || 'Failed' }}
+            Environment: ${{ github.event.inputs.deploy_environment || (github.ref == 'refs/heads/main' && 'production' || 'development') }}
+            Version: ${{ needs.build.outputs.image_tag }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Create GitHub Deployment Status
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          state: ${{ steps.status.outputs.status == 'success' && 'success' || 'failure' }}
+          deployment-id: ${{ github.run_id }}
+          environment-url: https://trading.${{ secrets.DOMAIN_NAME }}
+          description: Multi-Region Deployment to ${{ github.event.inputs.deploy_regions || 'us-east-1,eu-west-1,ap-southeast-1' }} - ${{ steps.status.outputs.status == 'success' && 'Successful' || 'Failed' }}

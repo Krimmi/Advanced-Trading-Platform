@@ -1,0 +1,34 @@
+{
+  "symbols": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "Technology",
+      "addedAt": "2023-05-15T10:30:00Z"
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc.",
+      "sector": "Technology",
+      "addedAt": "2023-05-15T10:31:00Z"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc.",
+      "sector": "Consumer Cyclical",
+      "addedAt": "2023-05-15T10:32:00Z"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla Inc.",
+      "sector": "Consumer Cyclical",
+      "addedAt": "2023-05-15T10:33:00Z"
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "sector": "Financial Services",
+      "addedAt": "2023-05-15T10:34:00Z"
+    }
+  ]
+}

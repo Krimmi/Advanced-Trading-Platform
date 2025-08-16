@@ -1,0 +1,140 @@
+{
+  "scenarioDetails": {
+    "name": "2008 Financial Crisis",
+    "description": "Simulates market conditions similar to the 2008 global financial crisis",
+    "duration": "17 months",
+    "peakDecline": -56.8,
+    "recoveryTime": "49 months"
+  },
+  "portfolioImpact": {
+    "totalValue": {
+      "before": 1250000.75,
+      "after": 875000.50,
+      "change": -375000.25,
+      "changePercent": -30.0
+    },
+    "drawdown": {
+      "maximum": -32.5,
+      "duration": "15 months",
+      "recoveryEstimate": "24 months"
+    },
+    "riskMetrics": {
+      "sharpeRatioBefore": 1.75,
+      "sharpeRatioAfter": 0.45,
+      "betaBefore": 0.85,
+      "betaAfter": 1.15,
+      "volatilityBefore": 18.5,
+      "volatilityAfter": 32.8
+    }
+  },
+  "assetClassImpact": [
+    { "assetClass": "Equities", "beforeValue": 1000000.00, "afterValue": 650000.00, "changePercent": -35.0 },
+    { "assetClass": "Fixed Income", "beforeValue": 125000.00, "afterValue": 118750.00, "changePercent": -5.0 },
+    { "assetClass": "Alternatives", "beforeValue": 50000.00, "afterValue": 37500.00, "changePercent": -25.0 },
+    { "assetClass": "Cash", "beforeValue": 75000.75, "afterValue": 75000.75, "changePercent": 0.0 }
+  ],
+  "sectorImpact": [
+    { "sector": "Technology", "beforeValue": 450000.00, "afterValue": 270000.00, "changePercent": -40.0 },
+    { "sector": "Financial Services", "beforeValue": 300000.00, "afterValue": 150000.00, "changePercent": -50.0 },
+    { "sector": "Healthcare", "beforeValue": 200000.00, "afterValue": 160000.00, "changePercent": -20.0 },
+    { "sector": "Consumer Cyclical", "beforeValue": 150000.00, "afterValue": 90000.00, "changePercent": -40.0 },
+    { "sector": "Energy", "beforeValue": 75000.00, "afterValue": 52500.00, "changePercent": -30.0 },
+    { "sector": "Cash", "beforeValue": 75000.75, "afterValue": 75000.75, "changePercent": 0.0 }
+  ],
+  "holdingsImpact": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "beforeValue": 175500.00,
+      "afterValue": 105300.00,
+      "changePercent": -40.0,
+      "beforeWeight": 14.04,
+      "afterWeight": 12.03
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "beforeValue": 212600.00,
+      "afterValue": 127560.00,
+      "changePercent": -40.0,
+      "beforeWeight": 17.01,
+      "afterWeight": 14.58
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc.",
+      "beforeValue": 67750.00,
+      "afterValue": 40650.00,
+      "changePercent": -40.0,
+      "beforeWeight": 5.42,
+      "afterWeight": 4.65
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "beforeValue": 174300.00,
+      "afterValue": 87150.00,
+      "changePercent": -50.0,
+      "beforeWeight": 13.94,
+      "afterWeight": 9.96
+    },
+    {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "beforeValue": 153720.00,
+      "afterValue": 122976.00,
+      "changePercent": -20.0,
+      "beforeWeight": 12.30,
+      "afterWeight": 14.05
+    }
+  ],
+  "timeSeriesProjection": {
+    "dates": [
+      "Month 1", "Month 2", "Month 3", "Month 4", "Month 5",
+      "Month 6", "Month 7", "Month 8", "Month 9", "Month 10",
+      "Month 11", "Month 12", "Month 13", "Month 14", "Month 15",
+      "Month 16", "Month 17", "Month 18", "Month 19", "Month 20",
+      "Month 21", "Month 22", "Month 23", "Month 24"
+    ],
+    "portfolioValues": [
+      1250000, 1200000, 1150000, 1100000, 1050000,
+      1000000, 950000, 900000, 875000, 850000,
+      825000, 800000, 775000, 750000, 775000,
+      800000, 825000, 850000, 875000, 900000,
+      925000, 950000, 975000, 1000000
+    ],
+    "benchmarkValues": [
+      100, 96, 92, 88, 84,
+      80, 76, 72, 68, 64,
+      60, 56, 52, 48, 50,
+      52, 54, 56, 58, 60,
+      62, 64, 66, 68
+    ]
+  },
+  "mitigationStrategies": [
+    {
+      "strategy": "Increase Cash Allocation",
+      "description": "Increase cash position to 15% of portfolio",
+      "impactReduction": 8.5,
+      "implementationCost": 0.2
+    },
+    {
+      "strategy": "Add Hedging Positions",
+      "description": "Purchase put options on major indices",
+      "impactReduction": 12.5,
+      "implementationCost": 1.8
+    },
+    {
+      "strategy": "Sector Reallocation",
+      "description": "Reduce exposure to financial sector by 50%",
+      "impactReduction": 7.5,
+      "implementationCost": 0.5
+    },
+    {
+      "strategy": "Add Defensive Stocks",
+      "description": "Increase allocation to consumer staples and utilities",
+      "impactReduction": 5.0,
+      "implementationCost": 0.3
+    }
+  ]
+}

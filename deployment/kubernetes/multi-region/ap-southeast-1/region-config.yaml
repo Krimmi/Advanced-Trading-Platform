@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: region-config
+  namespace: production
+data:
+  region-name: "ap-southeast-1"
+  region-display-name: "Asia Pacific (Singapore)"
+  primary-region: "false"
+  data-residency-zone: "apac"
+  api-endpoint: "api-ap.hedgefund-trading.com"
+  websocket-endpoint: "ws-ap.hedgefund-trading.com"
+  cdn-endpoint: "cdn-ap.hedgefund-trading.com"
+  backup-regions: "us-east-1,eu-west-1"
+  market-data-sources: "sgx,hkex,jpx"
+  regulatory-jurisdiction: "sg-pdpa,hk-sfc,jp-fsa"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hftp-config
+  namespace: production
+data:
+  redis-host: "redis-master.ap-southeast-1.hedgefund-trading.internal"
+  redis-port: "6379"
+  postgres-host: "postgres-master.ap-southeast-1.hedgefund-trading.internal"
+  postgres-port: "5432"
+  timescale-host: "timescale-master.ap-southeast-1.hedgefund-trading.internal"
+  timescale-port: "5432"
+  kafka-brokers: "kafka-0.ap-southeast-1.hedgefund-trading.internal:9092,kafka-1.ap-southeast-1.hedgefund-trading.internal:9092,kafka-2.ap-southeast-1.hedgefund-trading.internal:9092"
+  elasticsearch-endpoint: "elasticsearch.ap-southeast-1.hedgefund-trading.internal:9200"
+  log-level: "info"
+  feature-flags: '{"enhancedAnalytics":true,"advancedRiskModels":true,"aiTradingSignals":true}'
+  max-connections: "1000"
+  connection-timeout: "30"
+  region-specific-settings: '{"dataRetentionDays":180,"maxHistoricalDataPoints":10000,"defaultCurrency":"SGD","pdpaCompliance":true}'
