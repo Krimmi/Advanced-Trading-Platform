@@ -5,17 +5,11 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY hedge-fund-app/package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with legacy-peer-deps flag
+RUN npm install --legacy-peer-deps
 
 # Copy project files
 COPY hedge-fund-app/ .
-
-# Build the app
-RUN npm run build
-
-# Install serve to run the application
-RUN npm install -g serve
 
 # Expose the port the app runs on
 EXPOSE 3000

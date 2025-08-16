@@ -8,13 +8,10 @@ import time
 from typing import Dict, Any
 
 # Import configuration
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from config.config import settings
 
-# Import Redis for rate limiting
-from ..config.redis import rate_limiter
+# Import Redis for rate limiting - fixed import path
+from src.backend.config.redis import rate_limiter
 
 # Create FastAPI app
 app = FastAPI(

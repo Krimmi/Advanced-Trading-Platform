@@ -112,6 +112,35 @@ Ensure the PostgreSQL container is running:
 docker-compose ps postgres
 ```
 
+### Redis Connection Issues
+
+If you encounter Redis-related errors:
+
+1. Check if Redis container is running:
+   ```bash
+   docker-compose ps redis
+   ```
+
+2. Verify Redis logs:
+   ```bash
+   docker-compose logs redis
+   ```
+
+3. Test Redis connection from the backend:
+   ```bash
+   docker-compose exec backend python src/test_redis_connection.py
+   ```
+
+4. Check Redis configuration:
+   ```bash
+   docker-compose exec redis redis-cli CONFIG GET *
+   ```
+
+5. Restart Redis service:
+   ```bash
+   docker-compose restart redis
+   ```
+
 ### Port Conflicts
 
 If you have services already using ports 3000, 8000, 5432, or 6379, you'll need to modify the port mappings in the `docker-compose.yml` file.
@@ -134,9 +163,46 @@ docker-compose exec postgres psql -U postgres -d hedge_fund_app
 docker-compose exec redis redis-cli
 ```
 
+Common Redis commands:
+```
+PING                  # Test connection
+INFO                  # Get Redis server information
+KEYS *                # List all keys (use with caution in production)
+GET <key>             # Get value for a specific key
+TTL <key>             # Check time-to-live for a key
+MONITOR               # Monitor Redis commands in real-time
+```
+
+### Testing Redis Rate Limiting
+
+```bash
+# Access Redis CLI
+docker-compose exec redis redis-cli
+
+# Check rate limit keys
+KEYS *rate*
+
+# Get current count for a rate limit key
+GET rate:ip:127.0.0.1
+
+# Check TTL for a rate limit key
+TTL rate:ip:127.0.0.1
+```
+
 ### Rebuilding Containers After Code Changes
 
 ```bash
 docker-compose build
 docker-compose up -d
 ```
+
+## Redis Configuration
+
+The Redis configuration has been updated to provide better reliability and error handling. Key improvements include:
+
+1. Fixed import paths for better compatibility in Docker environments
+2. Added proper rate limiting implementation
+3. Improved error handling for Redis connection failures
+4. Added connection pooling for better performance
+
+For more details on Redis configuration, see the [REDIS_CONFIGURATION.md](REDIS_CONFIGURATION.md) file.

@@ -47,13 +47,24 @@ An advanced trading application with ML/AI capabilities for hedge fund operation
 
 ## Getting Started
 
-### Prerequisites
-- Node.js 16+
-- Python 3.8+
-- PostgreSQL
-- Redis
+### Docker Setup (Recommended)
 
-### Installation
+The easiest way to get started is using Docker:
+
+```bash
+# Start all services
+docker-compose up -d
+
+# Access the application
+# Frontend: http://localhost:3000
+# API: http://localhost:8000/api/docs
+```
+
+For detailed Docker setup instructions, see [DOCKER_SETUP.md](DOCKER_SETUP.md).
+
+### Manual Installation
+
+If you prefer manual installation:
 
 1. Clone the repository
 ```bash
@@ -68,7 +79,7 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
-pip install fastapi uvicorn pydantic python-dotenv redis sqlalchemy psycopg2-binary pandas numpy scikit-learn tensorflow websockets
+pip install -r requirements.txt
 
 # Create .env file with your configuration
 # See .env.example for required variables
@@ -85,6 +96,32 @@ npm start
 ```
 http://localhost:3000
 ```
+
+For detailed manual installation instructions, see [INSTALLATION_GUIDE.md](INSTALLATION_GUIDE.md).
+
+## Testing the Deployment
+
+We provide scripts to test your deployment:
+
+```bash
+# For Linux/macOS
+./test_docker_deployment.sh
+
+# For Windows
+test_docker_deployment.bat
+```
+
+These scripts verify that all components, including Redis, are functioning correctly.
+
+## Redis Configuration
+
+The platform uses Redis for:
+- Caching frequently accessed data
+- Rate limiting API requests
+- Real-time data processing
+- Session management
+
+For detailed Redis configuration information, see [REDIS_CONFIGURATION.md](REDIS_CONFIGURATION.md).
 
 ## Using Real Market Data
 
@@ -122,6 +159,14 @@ Each region includes:
 - Advanced threat protection with behavioral analysis
 - Comprehensive audit logging
 
+## Troubleshooting
+
+If you encounter issues:
+
+1. Check the [DOCKER_SETUP.md](DOCKER_SETUP.md) for common Docker-related issues
+2. For Redis-specific issues, see [REDIS_CONFIGURATION.md](REDIS_CONFIGURATION.md)
+3. Run the test scripts to diagnose deployment problems
+
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details
